@@ -1,0 +1,35 @@
+{
+  "name": "cra-template-oneblink-forms-app",
+  "description": "Create React App template for bootstrapping a OneBlink Custom Forms App Front end",
+  "version": "1.0.0",
+  "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
+  "bugs": {
+    "url": "https://github.com/oneblink/cra-template-oneblink-forms-app/issues"
+  },
+  "dependencies": {
+    "@blinkmobile/geolocation": "^2.0.3",
+    "@oneblink/apps": "^0.10.0-beta.10",
+    "@oneblink/apps-react": "^0.4.10-beta.1",
+    "@oneblink/sdk": "0.9.5"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "files": [
+    "template",
+    "template.json"
+  ],
+  "homepage": "https://github.com/oneblink/cra-template-oneblink-forms-app#readme",
+  "keywords": [],
+  "license": "GPL-3.0-only",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oneblink/cra-template-oneblink-forms-app.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
