@@ -1,7 +1,7 @@
 {
   "name": "@oneblink/cra-template-oneblink-forms-app",
   "description": "Create React App template for bootstrapping a OneBlink Custom Forms App Front end",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/cra-template-oneblink-forms-app/issues"
@@ -17,7 +17,8 @@
   },
   "files": [
     "template",
-    "template.json"
+    "template.json",
+    "README.md"
   ],
   "homepage": "https://github.com/oneblink/cra-template-oneblink-forms-app#readme",
   "keywords": [],

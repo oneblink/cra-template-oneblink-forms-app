@@ -93,7 +93,7 @@ export default function Menu({ position }: Props) {
   const [isCollapsed, toggleExpanded] = useCycle(false, true)
 
   React.useEffect(() => {
-    if (vpWidth <= 480 && !isCollapsed) {
+    if (vpWidth <= 480 && vpWidth && !isCollapsed) {
       toggleExpanded()
     }
   }, [isCollapsed, toggleExpanded, vpWidth])
@@ -122,6 +122,7 @@ export default function Menu({ position }: Props) {
   return (
     <MenuContainer
       animate={animation}
+      initial={'openWidth'}
       custom={customAnimationValue}
       ref={containerRef}
       position={position}

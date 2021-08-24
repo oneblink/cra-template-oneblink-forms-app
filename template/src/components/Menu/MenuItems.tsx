@@ -13,7 +13,7 @@ interface DisplayProps {
   direction: 'row' | 'column'
 }
 
-const MENU_WIDTH_OPEN = 200
+const MENU_WIDTH_OPEN = 180
 const MENU_WIDTH_CLOSED = 24
 const MENU_HEIGHT_OPEN = 48
 const MENU_HEIGHT_CLOSED = 24
@@ -63,7 +63,7 @@ const openClosedVariants: Variants = {
       width: width,
       transition: {
         ease: 'easeOut',
-        duration: 0.15,
+        duration: 0.4,
       },
     }
   },
@@ -105,7 +105,7 @@ const MenuListItem = styled.li<DisplayProps>`
 `
 MenuListItem.displayName = 'MenuListItem'
 
-const MenuButton = styled(NavLink)<DisplayProps & Props>`
+const MenuButton = styled(NavLink)<DisplayProps>`
   color: ${({ theme }) => theme.font.color.menu};
   padding: 0.25rem 0;
   position: relative;
@@ -166,8 +166,6 @@ export default function MenuItems({ isCollapsed, position }: Props) {
             exact
             title="Forms List"
             direction={direction}
-            position={position}
-            isCollapsed={isCollapsed}
             activeStyle={activeMenuItemStyle}
           >
             <Home size={24} />
@@ -179,8 +177,6 @@ export default function MenuItems({ isCollapsed, position }: Props) {
             to="/pending"
             title="Pending Queue"
             direction={direction}
-            position={position}
-            isCollapsed={isCollapsed}
             activeStyle={activeMenuItemStyle}
           >
             <List size={24} />
@@ -192,8 +188,6 @@ export default function MenuItems({ isCollapsed, position }: Props) {
             to="/drafts"
             title="Drafts"
             direction={direction}
-            position={position}
-            isCollapsed={isCollapsed}
             activeStyle={activeMenuItemStyle}
           >
             <Drafts size={24} />
