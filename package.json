@@ -1,5 +1,5 @@
 {
-  "name": "cra-template-oneblink-forms-app",
+  "name": "@oneblink/cra-template-oneblink-forms-app",
   "description": "Create React App template for bootstrapping a OneBlink Custom Forms App Front end",
   "version": "1.0.0",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
