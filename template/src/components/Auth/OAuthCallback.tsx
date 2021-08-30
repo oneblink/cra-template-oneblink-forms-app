@@ -6,11 +6,12 @@ import ErrorMessage from 'components/ErrorMessage'
 import { useIsMounted } from '@oneblink/apps-react'
 import { authService } from '@oneblink/apps'
 import LoginButton from 'components/Auth/LoginButton'
+import useOneBlinkError from 'hooks/useOneBlinkError'
 
 export default function OAuthCallbackRoute() {
   const [continueTo, setContinueTo] = useState('')
   const isMounted = useIsMounted()
-  const [errorMessage, setErrorMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useOneBlinkError()
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -19,7 +20,6 @@ export default function OAuthCallbackRoute() {
       try {
         continueResponse = await authService.handleAuthentication()
       } catch (e) {
-        console.error(e)
         setErrorMessage('Sorry, We were unable to verify your login details')
       }
 
@@ -31,14 +31,14 @@ export default function OAuthCallbackRoute() {
       }
     }
     !continueTo && handleAuth()
-  }, [continueTo, isMounted])
+  }, [continueTo, isMounted, setErrorMessage])
 
   if (!!errorMessage) {
     return (
       <ErrorMessage>
         <h2>We cant log you in</h2>
 
-        <p>{errorMessage}</p>
+        <p>{errorMessage.message}</p>
 
         <LoginButton />
       </ErrorMessage>

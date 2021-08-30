@@ -4,6 +4,12 @@ import {
   DefaultTheme,
 } from 'styled-components'
 
+const screenSizes = {
+  phone: 480,
+  tablet: 768,
+  largeTablet: 1024,
+}
+
 const theme: DefaultTheme = {
   palette: {
     primaryColor: '#FCB900',
@@ -32,11 +38,12 @@ const theme: DefaultTheme = {
     bold: 800,
   },
   unit: 16,
-  screenSizes: {
-    phone: 'max-width: 480px',
-    tablet: 'max-width: 768px',
-    largeTablet: 'max-width: 1024px',
+  breakPoints: {
+    phone: `max-width: ${screenSizes.phone}px`,
+    tablet: `max-width: ${screenSizes.tablet}px`,
+    largeTablet: `max-width: ${screenSizes.largeTablet}px`,
   },
+  screenSizes,
 }
 
 export default function ThemeProvider({

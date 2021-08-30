@@ -1,12 +1,13 @@
 import React, { PropsWithChildren, useContext } from 'react'
 import { useHistory } from 'react-router-dom'
-import { formService, authService, OneBlinkAppsError } from '@oneblink/apps'
+import { formService, authService } from '@oneblink/apps'
 import { useIsMounted } from '@oneblink/apps-react'
 import { FormTypes } from '@oneblink/types'
 import config from '../config'
 
 import ErrorMessage from '../components/ErrorMessage'
 import LoadingSpinner from 'components/LoadingSpinner'
+import useOneBlinkError from 'hooks/useOneBlinkError'
 
 type TFormsDefinitionContext = {
   forms: FormTypes.Form[]
@@ -28,8 +29,8 @@ export default function FormsDefinitionProvider({
   const [formState, setFormState] = React.useState<{
     forms: FormTypes.Form[]
     isFetching: boolean
-    fetchError?: OneBlinkAppsError
   }>({ forms: [], isFetching: true })
+  const [fetchError, setFetchError] = useOneBlinkError()
   const isMounted = useIsMounted()
   const history = useHistory()
 
@@ -75,17 +76,17 @@ export default function FormsDefinitionProvider({
           console.error(e)
           setFormState((current) => ({
             ...current,
-            fetchError: e,
             isFetching: false,
           }))
+          setFetchError(e)
         }
       }
     }
 
     fetchForms()
-  }, [isMounted, history])
+  }, [isMounted, history, setFetchError])
 
-  if (formState.fetchError) {
+  if (fetchError) {
     return <ErrorMessage>There has been an error fetching forms.</ErrorMessage>
   }
 

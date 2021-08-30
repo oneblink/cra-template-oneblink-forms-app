@@ -1,7 +1,8 @@
 import React from 'react'
-import { draftService, OneBlinkAppsError } from '@oneblink/apps'
+import { draftService } from '@oneblink/apps'
 import { useIsMounted } from '@oneblink/apps-react'
 import { SubmissionTypes } from '@oneblink/types'
+import useOneBlinkError from './useOneBlinkError'
 
 export default function useFetchDraftAndData(draftId?: string) {
   const [draftAndData, setDraftAndData] = React.useState<{
@@ -9,8 +10,7 @@ export default function useFetchDraftAndData(draftId?: string) {
     draftData: { readonly [x: string]: unknown }
   }>()
 
-  const [fetchDraftAndDataError, setFetchDraftAndDataError] =
-    React.useState<OneBlinkAppsError | null>(null)
+  const [fetchDraftAndDataError, setFetchDraftAndDataError] = useOneBlinkError()
 
   const [isFetchingDraftAndData, setIsFetchingDraftAndData] =
     React.useState<boolean>(false)
@@ -26,7 +26,6 @@ export default function useFetchDraftAndData(draftId?: string) {
         if (!isMounted.current) return
       } catch (e) {
         if (!isMounted.current) return
-        console.error(e)
         setFetchDraftAndDataError(e)
       } finally {
         setIsFetchingDraftAndData(false)
@@ -36,7 +35,7 @@ export default function useFetchDraftAndData(draftId?: string) {
     if (draftId) {
       fetchDraftAndData()
     }
-  }, [isMounted, draftId])
+  }, [isMounted, draftId, setFetchDraftAndDataError])
 
   return {
     draftAndData,

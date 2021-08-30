@@ -15,8 +15,9 @@ import ConfirmSaveDraftModal from 'components/Modals/ConfirmSaveDraftModal'
 import useSubmitForm from 'hooks/useSubmitForm'
 import useCancelForm from 'hooks/useCancelForm'
 import useSaveDraft, { OnConfirmSaveDraftType } from 'hooks/useSaveDraft'
+import { SetErrorFn } from 'hooks/useOneBlinkError'
 
-import { submissionService } from '@oneblink/apps'
+import { OneBlinkAppsError, submissionService } from '@oneblink/apps'
 
 type Props = {
   form: FormTypes.Form
@@ -30,6 +31,7 @@ type Props = {
     submission: FormSubmissionState,
     definition: FormTypes.Form,
   ) => FormSubmissionState
+  buttons?: Record<string, unknown>
 }
 
 type FormSubmissionState = {
@@ -44,6 +46,7 @@ function ControlledFormContainer({
   autoSaveKey,
   updateDefinition,
   updateSubmission,
+  buttons,
 }: Props & { autoSaveKey?: string }) {
   if (autoSaveKey) {
     return (
@@ -54,6 +57,7 @@ function ControlledFormContainer({
         updateDefinition={updateDefinition}
         updateSubmission={updateSubmission}
         autoSaveKey={autoSaveKey}
+        buttons={buttons}
       />
     )
   } else {
@@ -64,6 +68,7 @@ function ControlledFormContainer({
         existingDraft={existingDraft}
         updateDefinition={updateDefinition}
         updateSubmission={updateSubmission}
+        buttons={buttons}
       />
     )
   }
@@ -75,6 +80,7 @@ function ControlledForm({
   existingDraft,
   updateDefinition,
   updateSubmission,
+  buttons,
 }: Props) {
   const [onCancel] = useCancelForm(form)
 
@@ -145,6 +151,7 @@ function ControlledForm({
       formSubmissionResult={formSubmissionResult}
       handlePostSubmissionAction={handlePostSubmissionAction}
       postSubmissionActionErrorMessage={postSubmissionActionErrorMessage}
+      buttons={buttons}
     />
   )
 }
@@ -156,6 +163,7 @@ function ControlledFormWithAutosave({
   updateDefinition,
   updateSubmission,
   autoSaveKey,
+  buttons,
 }: Props & { autoSaveKey: string }) {
   const [onCancel] = useCancelForm(form)
 
@@ -243,6 +251,7 @@ function ControlledFormWithAutosave({
         formSubmissionResult={formSubmissionResult}
         handlePostSubmissionAction={handlePostSubmissionAction}
         postSubmissionActionErrorMessage={postSubmissionActionErrorMessage}
+        buttons={buttons}
       />
       <Modal
         isOpen={!!isAutoSaveSubmissionAvailable}
@@ -285,19 +294,20 @@ type BaseProps = {
   customSetFormSubmission: (submission: any) => void
   existingDraft?: DraftAndData
   isSavingDraft: boolean
-  saveDraftError: Error | null
+  saveDraftError?: OneBlinkAppsError
   clearSaveDraftError: () => void
   tempDraftFormSubmissionResult?: submissionService.NewDraftSubmission
   cancelSaveDraft: () => void
   onConfirmSaveDraft: OnConfirmSaveDraftType
   isSubmitting: boolean
-  submissionError: Error | null
-  setSubmissionError: (value: React.SetStateAction<Error | null>) => void
+  submissionError?: OneBlinkAppsError
+  setSubmissionError: SetErrorFn
   formSubmissionResult?: submissionService.FormSubmissionResult
   handlePostSubmissionAction: (
     formSubmissionResult: submissionService.FormSubmissionResult,
   ) => void
-  postSubmissionActionErrorMessage: Error | null
+  postSubmissionActionErrorMessage?: OneBlinkAppsError
+  buttons?: Record<string, unknown>
 }
 
 function ControlledFormBase({
@@ -321,6 +331,7 @@ function ControlledFormBase({
   formSubmissionResult,
   handlePostSubmissionAction,
   postSubmissionActionErrorMessage,
+  buttons,
 }: BaseProps) {
   return (
     <React.Fragment>
@@ -332,7 +343,7 @@ function ControlledFormBase({
         onSaveDraft={onSaveDraft}
         googleMapsApiKey={config.GOOGLE_MAP_API_KEY}
         captchaSiteKey={config.RECAPTCHA_SITE_KEY}
-        buttons={{}}
+        buttons={buttons}
         setFormSubmission={customSetFormSubmission}
       />
       <Modal
@@ -362,7 +373,7 @@ function ControlledFormBase({
       {!!submissionError && (
         <ErrorModal
           error={submissionError}
-          onClose={() => setSubmissionError(null)}
+          onClose={() => setSubmissionError(undefined)}
         />
       )}
       {formSubmissionResult && (

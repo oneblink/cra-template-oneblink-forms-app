@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import useFetchForm from '../../hooks/useFetchForm'
 import useQuery from '../../hooks/useQuery'
 import useFetchDraftAndData from '../../hooks/useFetchDraftAndData'
+import { useAppStyles } from 'Providers/AppStylesProvider'
 
 import LoadingSpinner from '../../components/LoadingSpinner'
 import ErrorMessage from '../../components/ErrorMessage'
@@ -14,6 +15,7 @@ import ControlledForm from './ControlledForm'
 import { FormTypes } from '@oneblink/types'
 
 import styled from 'styled-components'
+import { autoSaveService } from '@oneblink/apps'
 
 const FormWrapper = styled.div`
   width: 100%;
@@ -29,6 +31,7 @@ function Form({
   preFillData: Record<string, unknown>
   existingDraft?: DraftAndData
 }) {
+  const { buttons } = useAppStyles()
   /*  
     Two 'Types' of form components are available, the default uncontrolled form, and a controlled form.
     The controlled form can be used for on the fly programmatic access to the definition and submission,
@@ -45,7 +48,7 @@ function Form({
           form={formDefinition}
           preFillData={preFillData}
           existingDraft={existingDraft}
-          autoSaveKey="NO_JOB_ID"
+          buttons={buttons}
           updateDefinition={(definition) => {
             /* 
               Here you may update the form definition programatically.
@@ -69,27 +72,38 @@ function Form({
         <DefaultForm
           form={formDefinition}
           preFillData={preFillData}
-          autoSaveKey="NO_JOB_ID"
           existingDraft={existingDraft}
+          buttons={buttons}
         />
       )
   }
 }
 
 export default function FormContainer() {
-  const { formId } = useParams<{ formId: string }>()
+  const params = useParams<{ formId: string }>()
+  const formId = parseInt(params.formId)
   const query = useQuery()
 
   const draftId = query?.draftId?.toString()
+
+  React.useEffect(() => {
+    const removeAutosave = async () => {
+      if (draftId) {
+        // resuming a draft, remove autosave if there is one
+        await autoSaveService.deleteAutoSaveData(formId, null)
+      }
+    }
+
+    removeAutosave()
+  }, [draftId, formId])
 
   const [preFillError, setPreFillError] = React.useState<boolean>(false)
   const [preFillData, setPreFillData] = React.useState<Record<string, unknown>>(
     {},
   )
 
-  const { formDefinition, fetchFormError, isFetchingForm } = useFetchForm(
-    parseInt(formId),
-  )
+  const { formDefinition, fetchFormError, isFetchingForm } =
+    useFetchForm(formId)
 
   const { draftAndData, isFetchingDraftAndData, fetchDraftAndDataError } =
     useFetchDraftAndData(draftId)

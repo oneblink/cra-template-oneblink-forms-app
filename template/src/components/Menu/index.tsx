@@ -61,7 +61,7 @@ const NavContainer = styled.div<Props>`
 
 const PageContainer = styled.div<ContainerProps>`
   display: flex;
-  flex: 1 0 auto;
+  flex: 1;
   flex-direction: column;
 
   margin-top: ${({ menuPosition }) =>

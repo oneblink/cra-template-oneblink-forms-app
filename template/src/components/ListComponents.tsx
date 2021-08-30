@@ -4,9 +4,9 @@ import { Delete } from '@styled-icons/material'
 export const ItemContainer = styled.div`
   border-bottom: solid 1px ${({ theme }) => theme.palette.lightgrey};
   display: flex;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
+  padding: 0.5rem;
   width: 100%;
+  align-items: center;
 `
 ItemContainer.displayName = 'ItemContainer'
 

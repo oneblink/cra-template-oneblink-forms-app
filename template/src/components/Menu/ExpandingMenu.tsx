@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { motion, useCycle, Variants } from 'framer-motion'
+import { motion, useCycle } from 'framer-motion'
 import useViewportSizes from 'use-viewport-sizes'
 
 import MenuToggle from './MenuToggle'
@@ -12,44 +12,6 @@ interface Props {
   position: 'left' | 'right' | 'top' | 'bottom'
 }
 
-const textOpenClosedVariants: Variants = {
-  openWidth: {
-    opacity: 1,
-    visibility: 'visible',
-    display: 'block',
-
-    transition: {
-      ease: 'linear',
-      duration: 0.3,
-    },
-  },
-  closedWidth: {
-    opacity: 0,
-    transitionEnd: { display: 'none' },
-    transition: {
-      ease: 'linear',
-      duration: 0.1,
-    },
-  },
-  openHeight: {
-    opacity: 1,
-    visibility: 'visible',
-    position: 'relative',
-    transition: {
-      ease: 'linear',
-      duration: 0.3,
-    },
-  },
-  closedHeight: {
-    opacity: 0,
-    position: 'absolute',
-    transition: {
-      ease: 'linear',
-      duration: 0.1,
-    },
-  },
-}
-
 const MenuContainer = motion(styled.div<Props>`
   display: flex;
   flex: 1;
@@ -58,27 +20,6 @@ const MenuContainer = motion(styled.div<Props>`
   padding: 0 0.25rem;
 `)
 MenuContainer.displayName = 'MenuContainer'
-
-const MenuTextAnimated = motion(styled.span`
-  display: inline-block;
-  vertical-align: middle;
-  white-space: nowrap;
-  flex: 1;
-  padding: ${({ theme }) => theme.unit / 2}px;
-  margin-top: -3px;
-  font-weight: ${({ theme }) => theme.fontWeight.bold};
-`)
-MenuTextAnimated.displayName = 'MenuTextAnimated'
-
-const MenuText = ({
-  children,
-  ...props
-}: React.PropsWithChildren<Record<string, unknown>>) => (
-  <MenuTextAnimated {...props} variants={textOpenClosedVariants} layout>
-    {children}
-  </MenuTextAnimated>
-)
-MenuText.displayName = 'MenuText'
 
 const MenuHeader = styled.div`
   display: flex;
@@ -129,7 +70,6 @@ export default function Menu({ position }: Props) {
     >
       <MenuHeader>
         <MenuToggle onClick={toggleExpanded} align={menuToggleAlign} />
-        <MenuText>OneBlink Forms</MenuText>
       </MenuHeader>
       <MenuItems isCollapsed={isCollapsed} position={position} />
     </MenuContainer>

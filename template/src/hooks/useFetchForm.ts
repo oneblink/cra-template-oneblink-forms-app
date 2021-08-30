@@ -1,14 +1,14 @@
 import React from 'react'
-import { formService, OneBlinkAppsError } from '@oneblink/apps'
+import { formService } from '@oneblink/apps'
 import { useIsMounted } from '@oneblink/apps-react'
 import { FormTypes } from '@oneblink/types'
+import useOneBlinkError from './useOneBlinkError'
 
 export default function useFetchForm(formId: number) {
   const [formDefinition, setFormDefinition] =
     React.useState<FormTypes.Form | null>(null)
 
-  const [fetchFormError, setFetchFormError] =
-    React.useState<OneBlinkAppsError | null>(null)
+  const [fetchFormError, setFetchFormError] = useOneBlinkError()
 
   const [isFetchingForm, setIsFetchingForm] = React.useState<boolean>(true)
 
@@ -29,7 +29,7 @@ export default function useFetchForm(formId: number) {
       }
     }
     fetchForm()
-  }, [isMounted, formId])
+  }, [isMounted, formId, setFetchFormError])
 
   return {
     formDefinition,

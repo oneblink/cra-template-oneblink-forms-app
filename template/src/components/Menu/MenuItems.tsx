@@ -106,6 +106,7 @@ const MenuListItem = styled.li<DisplayProps>`
 MenuListItem.displayName = 'MenuListItem'
 
 const MenuButton = styled(NavLink)<DisplayProps>`
+  align-items: flex-end;
   color: ${({ theme }) => theme.font.color.menu};
   padding: 0.25rem 0;
   position: relative;

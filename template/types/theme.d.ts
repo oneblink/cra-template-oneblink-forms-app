@@ -29,10 +29,15 @@ declare module 'styled-components' {
       bold: number
     }
     unit: number
-    screenSizes: {
+    breakPoints: {
       phone: string
       tablet: string
       largeTablet: string
+    }
+    screenSizes: {
+      phone: number
+      tablet: number
+      largeTablet: number
     }
   }
 }

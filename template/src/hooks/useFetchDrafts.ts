@@ -4,8 +4,7 @@ import { SubmissionTypes } from '@oneblink/types'
 import { draftService } from '@oneblink/apps'
 
 export default function useFetchDrafts() {
-  const [drafts, setDrafts] =
-    React.useState<SubmissionTypes.FormsAppDraft[]>()
+  const [drafts, setDrafts] = React.useState<SubmissionTypes.FormsAppDraft[]>()
   const [isFetchingDrafts, startFetchingDrafts, doneFetchingDrafts] =
     useBooleanState(false)
   const [fetchDraftsError, setFetchDraftsError] = useNullableState<Error>(null)
@@ -14,15 +13,7 @@ export default function useFetchDrafts() {
     startFetchingDrafts()
     draftService
       .getDrafts()
-      .then(
-        (drafts) => {
-          setDrafts(drafts)
-        },
-        (err) => {
-          console.error(err)
-          setFetchDraftsError(err)
-        },
-      )
+      .then(setDrafts, setFetchDraftsError)
       .finally(doneFetchingDrafts)
   }, [setDrafts, startFetchingDrafts, doneFetchingDrafts, setFetchDraftsError])
 
