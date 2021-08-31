@@ -1,31 +1,19 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import React from 'react'
 import { useHistory } from 'react-router-dom'
 import { submissionService } from '@oneblink/apps'
 import { useIsMounted } from '@oneblink/apps-react'
 import config from '../config'
+import useOneBlinkError from './useOneBlinkError'
 
-export default function useSubmitForm(
-): {
-  onSubmit: (newFormSubmission: submissionService.NewFormSubmission) => unknown
-  isSubmitting: boolean
-  formSubmissionResult?: submissionService.FormSubmissionResult
-  submissionError: Error | null
-  setSubmissionError: Dispatch<SetStateAction<Error | null>>
-  handlePostSubmissionAction: (
-    formSubmissionResult: submissionService.FormSubmissionResult,
-  ) => void
-  postSubmissionActionErrorMessage: Error | null
-} {
+export default function useSubmitForm() {
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false)
-  const [submissionError, setSubmissionError] = React.useState<Error | null>(
-    null,
-  )
+  const [submissionError, setSubmissionError] = useOneBlinkError()
   const [formSubmissionResult, setFormSubmissionResult] =
     React.useState<submissionService.FormSubmissionResult>()
   const [
     postSubmissionActionErrorMessage,
     setPostSubmissionActionErrorMessage,
-  ] = React.useState<Error | null>(null)
+  ] = useOneBlinkError()
   const history = useHistory()
   const isMounted = useIsMounted()
 
@@ -43,7 +31,7 @@ export default function useSubmitForm(
         }
       }
     },
-    [history.push, isMounted],
+    [history.push, isMounted, setPostSubmissionActionErrorMessage],
   )
 
   const onSubmit = React.useCallback(
@@ -71,7 +59,7 @@ export default function useSubmitForm(
         setIsSubmitting(false)
       }
     },
-    [],
+    [setSubmissionError],
   )
 
   return {

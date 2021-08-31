@@ -5,6 +5,7 @@ import OAuthCallback from 'components/Auth/OAuthCallback'
 import OfflineBar from 'components/OfflineBar'
 
 import ThemeProvider from 'Providers/ThemeProvider'
+import AppStylesProvider from 'Providers/AppStylesProvider'
 import FormDefinitionProvider from 'Providers/FormDefinitionProvider'
 
 import Page from 'components/Layout/Page'
@@ -35,37 +36,39 @@ export default function App() {
   return (
     <Router>
       <ThemeProvider>
-        <OfflineBar />
-        <Page>
-          <Switch>
-            <Route path="/callback">
-              <OAuthCallback />
-            </Route>
-            <Route path="/login">
-              <LoginScene />
-            </Route>
-            <FormDefinitionProvider>
-              <Switch>
-                <AuthenticatedRoute path="/profile">
-                  <ProfileScene />
-                </AuthenticatedRoute>
-                <AuthenticatedRoute path="/forms/:formId" exact>
-                  <FormContainer />
-                </AuthenticatedRoute>
-                <AuthenticatedRoute path="/drafts" exact>
-                  <DraftsScene />
-                </AuthenticatedRoute>
-                <AuthenticatedRoute path="/pending" exact>
-                  <PendingQueueListScene />
-                </AuthenticatedRoute>
-                <AuthenticatedRoute path="/" exact>
-                  <H1>OneBlink Forms!</H1>
-                  <FormsListScene />
-                </AuthenticatedRoute>
-              </Switch>
-            </FormDefinitionProvider>
-          </Switch>
-        </Page>
+        <AppStylesProvider>
+          <OfflineBar />
+          <Page>
+            <Switch>
+              <Route path="/callback">
+                <OAuthCallback />
+              </Route>
+              <Route path="/login">
+                <LoginScene />
+              </Route>
+              <FormDefinitionProvider>
+                <Switch>
+                  <AuthenticatedRoute path="/profile">
+                    <ProfileScene />
+                  </AuthenticatedRoute>
+                  <AuthenticatedRoute path="/forms/:formId" exact>
+                    <FormContainer />
+                  </AuthenticatedRoute>
+                  <AuthenticatedRoute path="/drafts" exact>
+                    <DraftsScene />
+                  </AuthenticatedRoute>
+                  <AuthenticatedRoute path="/pending" exact>
+                    <PendingQueueListScene />
+                  </AuthenticatedRoute>
+                  <AuthenticatedRoute path="/" exact>
+                    <H1>OneBlink Forms!</H1>
+                    <FormsListScene />
+                  </AuthenticatedRoute>
+                </Switch>
+              </FormDefinitionProvider>
+            </Switch>
+          </Page>
+        </AppStylesProvider>
       </ThemeProvider>
     </Router>
   )

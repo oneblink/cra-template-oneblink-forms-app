@@ -5,35 +5,32 @@ import { useIsOffline, useIsMounted } from '@oneblink/apps-react'
 import { FormTypes } from '@oneblink/types'
 
 import config from 'config'
+import useOneBlinkError from './useOneBlinkError'
 
 export default function useFetchForms() {
   const isMounted = useIsMounted()
   const isOffline = useIsOffline()
+  const [loadError, setLoadError] = useOneBlinkError()
 
-  const [{ isLoading, loadError, forms }, setState] = React.useState<{
+  const [{ isLoading, forms }, setState] = React.useState<{
     isLoading: boolean
-    loadError?: Error
     forms: FormTypes.Form[]
   }>({
     isLoading: true,
-    loadError: undefined,
     forms: [],
   })
 
   const clearLoadError = React.useCallback(() => {
-    setState((currentState) => ({
-      ...currentState,
-      loadError: undefined,
-    }))
-  }, [])
+    setLoadError()
+  }, [setLoadError])
 
   const reloadFormsList = React.useCallback(async () => {
     if (isMounted.current) {
       setState((currentState) => ({
         isLoading: true,
-        loadError: undefined,
         forms: currentState.forms,
       }))
+      setLoadError()
     }
 
     let newError = null
@@ -59,13 +56,13 @@ export default function useFetchForms() {
     }
 
     if (isMounted.current) {
+      setLoadError(newError)
       setState({
         isLoading: false,
-        loadError: newError,
         forms: newForms,
       })
     }
-  }, [isMounted])
+  }, [isMounted, setLoadError])
 
   React.useEffect(() => {
     reloadFormsList()

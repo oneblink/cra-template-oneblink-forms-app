@@ -3,6 +3,7 @@ import { OneBlinkForm, OneBlinkAutoSaveForm } from '@oneblink/apps-react'
 import { FormTypes } from '@oneblink/types'
 
 import config from '../../config'
+
 import LoadingSpinner from 'components/LoadingSpinner'
 import useSubmitForm from 'hooks/useSubmitForm'
 import useSaveDraft from '../../hooks/useSaveDraft'
@@ -18,9 +19,16 @@ type Props = {
   preFillData: Record<string, unknown>
   autoSaveKey?: string
   existingDraft?: DraftAndData
+  buttons?: Record<string, unknown>
 }
 
-function Form({ form, preFillData, autoSaveKey, existingDraft }: Props) {
+function Form({
+  form,
+  preFillData,
+  autoSaveKey,
+  existingDraft,
+  buttons,
+}: Props) {
   const {
     onSubmit,
     isSubmitting,
@@ -54,7 +62,7 @@ function Form({ form, preFillData, autoSaveKey, existingDraft }: Props) {
           googleMapsApiKey={config.GOOGLE_MAP_API_KEY}
           captchaSiteKey={config.RECAPTCHA_SITE_KEY}
           initialSubmission={preFillData}
-          buttons={{}}
+          buttons={buttons}
           autoSaveKey={autoSaveKey}
         />
       ) : (
@@ -66,7 +74,7 @@ function Form({ form, preFillData, autoSaveKey, existingDraft }: Props) {
           googleMapsApiKey={config.GOOGLE_MAP_API_KEY}
           captchaSiteKey={config.RECAPTCHA_SITE_KEY}
           initialSubmission={preFillData}
-          buttons={{}}
+          buttons={buttons}
         />
       )}
       <Modal
@@ -96,7 +104,7 @@ function Form({ form, preFillData, autoSaveKey, existingDraft }: Props) {
       {!!submissionError && (
         <ErrorModal
           error={submissionError}
-          onClose={() => setSubmissionError(null)}
+          onClose={() => setSubmissionError()}
         />
       )}
       {formSubmissionResult && (

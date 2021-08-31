@@ -15,6 +15,10 @@ import Modal from 'components/Modal'
 import ErrorModal from 'components/Modals/ErrorModal'
 import { H1, P } from 'components/TextComponents'
 import PendingQueueListItem from './PendingQueueListItem'
+import useOneBlinkError from 'hooks/useOneBlinkError'
+
+import useViewportSizes from 'use-viewport-sizes'
+import { useTheme } from 'styled-components'
 
 const PendingQueueHeadingContainer = styled.div`
   display: flex;
@@ -23,10 +27,12 @@ const PendingQueueHeadingContainer = styled.div`
 `
 PendingQueueHeadingContainer.displayName = 'PendingQueueHeadingContainer'
 
-const ProcessPendingQueueButton = styled.button`
+const ProcessPendingQueueButtonContainer = styled.div`
   margin-left: auto;
+  padding-left: 2rem;
 `
-ProcessPendingQueueButton.displayName = 'ProcessPendingQueueButton'
+ProcessPendingQueueButtonContainer.displayName =
+  'ProcessPendingQueueButtonContainer'
 
 const OfflineIcon = styled(WifiOff)`
   height: 1.4rem;
@@ -58,10 +64,15 @@ export default function Pending() {
   const [isDeleting, startDelete, endDelete] = useBooleanState(false)
   const isOffline = useIsOffline()
 
-  const [pendingTimestampToDelete, setIdForDelete, unsetIdForDelete] =
-    useNullableState<string>(null)
-  const [deletePendingSubmissionError, setDeletePendingSubmissionError] =
-    React.useState<Error | null>(null)
+  const [
+    pendingTimestampToDelete,
+    setIdForDelete,
+    unsetIdForDelete,
+  ] = useNullableState<string>(null)
+  const [
+    deletePendingSubmissionError,
+    setDeletePendingSubmissionError,
+  ] = useOneBlinkError()
   const {
     pendingSubmissions,
     isLoading,
@@ -69,6 +80,10 @@ export default function Pending() {
     processPendingQueue,
     deletePendingSubmission,
   } = usePendingSubmissions()
+
+  //@ts-expect-error
+  const [vpWidth] = useViewportSizes({ throttleTimeout: 1000 })
+  const theme = useTheme()
 
   const handleDelete = React.useCallback(async () => {
     if (isMounted.current) {
@@ -87,34 +102,37 @@ export default function Pending() {
       endDelete()
     }
   }, [
-    unsetIdForDelete,
-    deletePendingSubmission,
     isMounted,
-    pendingTimestampToDelete,
-    endDelete,
     startDelete,
+    pendingTimestampToDelete,
+    deletePendingSubmission,
+    setDeletePendingSubmissionError,
+    unsetIdForDelete,
+    endDelete,
   ])
 
   return (
     <>
       <PendingQueueHeadingContainer>
         <H1>Pending Submissions</H1>
-        {!isOffline && !!pendingSubmissions.length && (
-          <ProcessPendingQueueButton
-            className="button ob-button is-primary"
-            onClick={processPendingQueue}
-            disabled={isProcessingPendingQueue}
-          >
-            {isProcessingPendingQueue ? <SyncingIcon /> : <SyncIcon />}
-            Process Submissions
-          </ProcessPendingQueueButton>
-        )}
-        {isOffline && (
-          <ProcessPendingQueueButton className="button ob-button is-primary">
-            <OfflineIcon />
-            Offline
-          </ProcessPendingQueueButton>
-        )}
+        <ProcessPendingQueueButtonContainer>
+          {!isOffline && !!pendingSubmissions.length && (
+            <button
+              className="button ob-button is-primary"
+              onClick={processPendingQueue}
+              disabled={isProcessingPendingQueue}
+            >
+              {isProcessingPendingQueue ? <SyncingIcon /> : <SyncIcon />}
+              {vpWidth > theme.screenSizes.phone && 'Process Submissions'}
+            </button>
+          )}
+          {isOffline && (
+            <button className="button ob-button is-primary">
+              <OfflineIcon />
+              Offline
+            </button>
+          )}
+        </ProcessPendingQueueButtonContainer>
       </PendingQueueHeadingContainer>
       <>
         {isLoading && (
@@ -139,7 +157,7 @@ export default function Pending() {
         {!!deletePendingSubmissionError && (
           <ErrorModal
             error={deletePendingSubmissionError}
-            onClose={() => setDeletePendingSubmissionError(null)}
+            onClose={() => setDeletePendingSubmissionError()}
           />
         )}
         {isDeleting && (

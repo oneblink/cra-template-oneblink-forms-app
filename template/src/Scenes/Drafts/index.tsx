@@ -11,6 +11,10 @@ import Modal from 'components/Modal'
 import ErrorModal from 'components/Modals/ErrorModal'
 import { H1, P } from 'components/TextComponents'
 import DraftsListItem from './DraftsListItem'
+import useOneBlinkError from 'hooks/useOneBlinkError'
+
+import useViewportSizes from 'use-viewport-sizes'
+import { useTheme } from 'styled-components'
 
 import config from '../../config'
 
@@ -21,10 +25,11 @@ const DraftsHeaderContainer = styled.div`
 `
 DraftsHeaderContainer.displayName = 'DraftsHeaderContainer'
 
-const SyncDraftsButton = styled.button`
+const SyncDraftsButtonContainer = styled.div`
   margin-left: auto;
+  padding-left: 2rem;
 `
-SyncDraftsButton.displayName = 'SyncDraftsButton'
+SyncDraftsButtonContainer.displayName = 'SyncDraftsButtonContainer'
 
 const SyncIcon = styled(Autorenew)`
   height: 1.4rem;
@@ -48,20 +53,19 @@ SyncingIcon.displayName = 'SyncingIcon'
 export default function Drafts() {
   const [drafts, setDrafts] = React.useState<SubmissionTypes.FormsAppDraft[]>()
   const [isSyncingDrafts, startSync, endSync] = useBooleanState(false)
-  const [syncDraftsError, setSyncDraftsError] = React.useState<Error | null>(
-    null,
-  )
-  const [deleteDraftError, setDeleteDraftError] = React.useState<Error | null>(
-    null,
-  )
+  const [syncDraftsError, setSyncDraftsError] = useOneBlinkError()
+  const [deleteDraftError, setDeleteDraftError] = useOneBlinkError()
   const [draftIdForDelete, setDraftIdForDelete] = React.useState<string>()
   const [isDeleting, startDelete, endDelete] = useBooleanState(false)
+  //@ts-expect-error
+  const [vpWidth] = useViewportSizes({ throttleTimeout: 1000 })
+  const theme = useTheme()
 
   const formsAppId = config.OB_FORMS_APP_ID
 
   const syncDrafts = React.useCallback(async () => {
     startSync()
-    setSyncDraftsError(null)
+    setSyncDraftsError()
     try {
       await draftService.syncDrafts({
         formsAppId: formsAppId,
@@ -70,12 +74,11 @@ export default function Drafts() {
       const drafts = await draftService.getDrafts()
       setDrafts(drafts)
     } catch (e) {
-      console.error(e)
       setSyncDraftsError(e)
     } finally {
       endSync()
     }
-  }, [formsAppId, startSync, endSync])
+  }, [startSync, setSyncDraftsError, formsAppId, endSync])
 
   const deleteDraft = React.useCallback(
     async (draftId: string) => {
@@ -83,7 +86,6 @@ export default function Drafts() {
         startDelete()
         await draftService.deleteDraft(draftId, formsAppId)
       } catch (e) {
-        console.error(e)
         setDeleteDraftError(e)
       } finally {
         setDraftIdForDelete(undefined)
@@ -91,7 +93,7 @@ export default function Drafts() {
         syncDrafts()
       }
     },
-    [formsAppId, syncDrafts, endDelete, startDelete],
+    [startDelete, formsAppId, setDeleteDraftError, endDelete, syncDrafts],
   )
 
   React.useEffect(() => {
@@ -102,34 +104,38 @@ export default function Drafts() {
     <div>
       <DraftsHeaderContainer>
         <H1>Drafts</H1>
-        <SyncDraftsButton
-          className="button ob-button is-primary"
-          onClick={syncDrafts}
-          disabled={isSyncingDrafts}
-        >
-          {isSyncingDrafts ? <SyncingIcon /> : <SyncIcon />}
-          Sync Drafts
-        </SyncDraftsButton>
+        <SyncDraftsButtonContainer>
+          <button
+            className="button ob-button is-primary"
+            onClick={syncDrafts}
+            disabled={isSyncingDrafts}
+          >
+            {isSyncingDrafts ? <SyncingIcon /> : <SyncIcon />}
+            {vpWidth > theme.screenSizes.phone && 'Sync Drafts'}
+          </button>
+        </SyncDraftsButtonContainer>
       </DraftsHeaderContainer>
       <div>
         {!isSyncingDrafts && syncDraftsError && (
           <ErrorMessage>
-            An error has occurred while attempting to sync drafts: {syncDraftsError}
+            An error has occurred while attempting to sync drafts:{' '}
+            {syncDraftsError.message}
           </ErrorMessage>
         )}
-        {!syncDraftsError && drafts?.map((draft) => (
-          <DraftsListItem
-            draft={draft}
-            key={draft.draftId}
-            onDelete={() => setDraftIdForDelete(draft.draftId)}
-            disabled={isSyncingDrafts}
-          />
-        ))}
+        {!syncDraftsError &&
+          drafts?.map((draft) => (
+            <DraftsListItem
+              draft={draft}
+              key={draft.draftId}
+              onDelete={() => setDraftIdForDelete(draft.draftId)}
+              disabled={isSyncingDrafts}
+            />
+          ))}
         {drafts?.length === 0 && <P>You have no drafts</P>}
         {!!deleteDraftError && (
           <ErrorModal
             error={deleteDraftError}
-            onClose={() => setDeleteDraftError(null)}
+            onClose={() => setDeleteDraftError()}
           />
         )}
         {isDeleting && (

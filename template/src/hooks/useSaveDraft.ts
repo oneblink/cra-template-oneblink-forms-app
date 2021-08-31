@@ -1,9 +1,14 @@
 import * as React from 'react'
-import { submissionService, draftService } from '@oneblink/apps'
+import {
+  submissionService,
+  draftService,
+  OneBlinkAppsError,
+} from '@oneblink/apps'
 import { useIsMounted } from '@oneblink/apps-react'
 import { SubmissionTypes } from '@oneblink/types'
 import { useHistory } from 'react-router-dom'
 import config from '../config'
+import useOneBlinkError from './useOneBlinkError'
 
 export type OnConfirmSaveDraftType = (
   draftSubmission: submissionService.NewDraftSubmission,
@@ -13,7 +18,7 @@ export type OnConfirmSaveDraftType = (
 
 export default function useSaveDraft(): {
   isSavingDraft: boolean
-  saveDraftError: Error | null
+  saveDraftError?: OneBlinkAppsError
   clearSaveDraftError: () => void
   tempDraftFormSubmissionResult?: submissionService.NewDraftSubmission
   onSaveDraft: (draft: submissionService.NewDraftSubmission) => void
@@ -21,8 +26,9 @@ export default function useSaveDraft(): {
   onConfirmSaveDraft: OnConfirmSaveDraftType
 } {
   const [isSavingDraft, setIsSavingDraft] = React.useState<boolean>(false)
-  const [saveDraftError, setSaveDraftError] = React.useState<Error | null>(null)
-  const [tempDraftFormSubmissionResult, setTempDraft] = React.useState<submissionService.NewDraftSubmission>()
+  const [saveDraftError, setSaveDraftError] = useOneBlinkError()
+  const [tempDraftFormSubmissionResult, setTempDraft] =
+    React.useState<submissionService.NewDraftSubmission>()
   const isMounted = useIsMounted()
   const history = useHistory()
 
@@ -65,13 +71,13 @@ export default function useSaveDraft(): {
         setSaveDraftError(e)
       }
     },
-    [history, isMounted,setTempDraft],
+    [history, isMounted, setSaveDraftError],
   )
 
   return {
     isSavingDraft,
     saveDraftError,
-    clearSaveDraftError: () => setSaveDraftError(null),
+    clearSaveDraftError: () => setSaveDraftError(),
     tempDraftFormSubmissionResult,
     onSaveDraft: setTempDraft,
     cancelSaveDraft: () => setTempDraft(undefined),
