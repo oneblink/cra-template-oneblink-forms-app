@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react'
 import { useHistory } from 'react-router-dom'
-import { formService, authService } from '@oneblink/apps'
+import { formService, authService, OneBlinkAppsError } from '@oneblink/apps'
 import { useIsMounted } from '@oneblink/apps-react'
 import { FormTypes } from '@oneblink/types'
 import config from '../config'
@@ -65,20 +65,23 @@ export default function FormsDefinitionProvider({
       } catch (e) {
         if (!isMounted.current) return
         if (
+          e instanceof OneBlinkAppsError &&
           e.originalError &&
           e.originalError.message === 'Refresh Token has been revoked'
         ) {
           console.log('Refresh token has been revoked, redirecting to login...')
           await authService.logout()
           history.replace('/')
-          window.location.reload(true)
+          window.location.reload()
         } else {
           console.error(e)
           setFormState((current) => ({
             ...current,
             isFetching: false,
           }))
-          setFetchError(e)
+          if (e instanceof OneBlinkAppsError || e instanceof Error) {
+            setFetchError(e)
+          }
         }
       }
     }

@@ -19,6 +19,7 @@ import useOneBlinkError from 'hooks/useOneBlinkError'
 
 import useViewportSizes from 'use-viewport-sizes'
 import { useTheme } from 'styled-components'
+import { OneBlinkAppsError } from '@oneblink/apps'
 
 const PendingQueueHeadingContainer = styled.div`
   display: flex;
@@ -64,15 +65,10 @@ export default function Pending() {
   const [isDeleting, startDelete, endDelete] = useBooleanState(false)
   const isOffline = useIsOffline()
 
-  const [
-    pendingTimestampToDelete,
-    setIdForDelete,
-    unsetIdForDelete,
-  ] = useNullableState<string>(null)
-  const [
-    deletePendingSubmissionError,
-    setDeletePendingSubmissionError,
-  ] = useOneBlinkError()
+  const [pendingTimestampToDelete, setIdForDelete, unsetIdForDelete] =
+    useNullableState<string>(null)
+  const [deletePendingSubmissionError, setDeletePendingSubmissionError] =
+    useOneBlinkError()
   const {
     pendingSubmissions,
     isLoading,
@@ -94,7 +90,9 @@ export default function Pending() {
         await deletePendingSubmission(pendingTimestampToDelete)
       }
     } catch (e) {
-      setDeletePendingSubmissionError(e)
+      if (e instanceof OneBlinkAppsError) {
+        setDeletePendingSubmissionError(e)
+      }
     }
 
     if (isMounted.current) {

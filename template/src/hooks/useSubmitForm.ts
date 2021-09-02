@@ -1,6 +1,6 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
-import { submissionService } from '@oneblink/apps'
+import { OneBlinkAppsError, submissionService } from '@oneblink/apps'
 import { useIsMounted } from '@oneblink/apps-react'
 import config from '../config'
 import useOneBlinkError from './useOneBlinkError'
@@ -26,7 +26,7 @@ export default function useSubmitForm() {
         )
       } catch (error) {
         console.warn('Could not execute post submission action', error)
-        if (isMounted.current) {
+        if (isMounted.current && error instanceof Error) {
           setPostSubmissionActionErrorMessage(error.message)
         }
       }
@@ -55,7 +55,9 @@ export default function useSubmitForm() {
         })
         setFormSubmissionResult(submissionResult)
       } catch (e) {
-        setSubmissionError(e)
+        if (e instanceof OneBlinkAppsError || e instanceof Error) {
+          setSubmissionError(e)
+        }
         setIsSubmitting(false)
       }
     },

@@ -1,5 +1,5 @@
 import React from 'react'
-import { formService } from '@oneblink/apps'
+import { formService, OneBlinkAppsError } from '@oneblink/apps'
 import { useIsMounted } from '@oneblink/apps-react'
 import { FormTypes } from '@oneblink/types'
 import useOneBlinkError from './useOneBlinkError'
@@ -23,7 +23,9 @@ export default function useFetchForm(formId: number) {
       } catch (e) {
         if (!isMounted.current) return
         console.error(e)
-        setFetchFormError(e)
+        if (e instanceof OneBlinkAppsError || e instanceof Error) {
+          setFetchFormError(e)
+        }
       } finally {
         setIsFetchingForm(false)
       }

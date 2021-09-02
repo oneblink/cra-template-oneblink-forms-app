@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { draftService } from '@oneblink/apps'
+import { draftService, OneBlinkAppsError } from '@oneblink/apps'
 import { useBooleanState } from '@oneblink/apps-react'
 import { SubmissionTypes } from '@oneblink/types'
 import styled, { keyframes } from 'styled-components'
@@ -74,7 +74,9 @@ export default function Drafts() {
       const drafts = await draftService.getDrafts()
       setDrafts(drafts)
     } catch (e) {
-      setSyncDraftsError(e)
+      if (e instanceof OneBlinkAppsError) {
+        setSyncDraftsError(e)
+      }
     } finally {
       endSync()
     }
@@ -86,7 +88,9 @@ export default function Drafts() {
         startDelete()
         await draftService.deleteDraft(draftId, formsAppId)
       } catch (e) {
-        setDeleteDraftError(e)
+        if (e instanceof OneBlinkAppsError) {
+          setDeleteDraftError(e)
+        }
       } finally {
         setDraftIdForDelete(undefined)
         endDelete()
