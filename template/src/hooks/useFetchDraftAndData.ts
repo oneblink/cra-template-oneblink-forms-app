@@ -1,5 +1,5 @@
 import React from 'react'
-import { draftService } from '@oneblink/apps'
+import { draftService, OneBlinkAppsError } from '@oneblink/apps'
 import { useIsMounted } from '@oneblink/apps-react'
 import { SubmissionTypes } from '@oneblink/types'
 import useOneBlinkError from './useOneBlinkError'
@@ -26,7 +26,9 @@ export default function useFetchDraftAndData(draftId?: string) {
         if (!isMounted.current) return
       } catch (e) {
         if (!isMounted.current) return
-        setFetchDraftAndDataError(e)
+        if (e instanceof OneBlinkAppsError || e instanceof Error) {
+          setFetchDraftAndDataError(e)
+        }
       } finally {
         setIsFetchingDraftAndData(false)
       }

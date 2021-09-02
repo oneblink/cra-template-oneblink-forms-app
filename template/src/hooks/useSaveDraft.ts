@@ -68,7 +68,9 @@ export default function useSaveDraft(): {
         }
       } catch (e) {
         setIsSavingDraft(false)
-        setSaveDraftError(e)
+        if (e instanceof OneBlinkAppsError || e instanceof Error) {
+          setSaveDraftError(e)
+        }
       }
     },
     [history, isMounted, setSaveDraftError],

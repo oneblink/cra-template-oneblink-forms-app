@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { submissionService } from '@oneblink/apps'
+import { OneBlinkAppsError, submissionService } from '@oneblink/apps'
 import { useIsMounted, useIsOffline } from '@oneblink/apps-react'
 import useOneBlinkError from './useOneBlinkError'
 
@@ -50,7 +50,9 @@ export default function usePendingSubmissions() {
     }
 
     if (isMounted.current) {
-      setLoadError(newError)
+      if (newError instanceof OneBlinkAppsError || newError instanceof Error) {
+        setLoadError(newError)
+      }
       setState({
         isLoading: false,
         pendingSubmissions: newPendingSubmissions,

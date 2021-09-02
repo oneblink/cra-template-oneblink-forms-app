@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { formService } from '@oneblink/apps'
+import { formService, OneBlinkAppsError } from '@oneblink/apps'
 import { useIsOffline, useIsMounted } from '@oneblink/apps-react'
 import { FormTypes } from '@oneblink/types'
 
@@ -56,7 +56,9 @@ export default function useFetchForms() {
     }
 
     if (isMounted.current) {
-      setLoadError(newError)
+      if (newError instanceof OneBlinkAppsError || newError instanceof Error) {
+        setLoadError(newError)
+      }
       setState({
         isLoading: false,
         forms: newForms,

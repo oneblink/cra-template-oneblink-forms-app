@@ -1,15 +1,15 @@
 {
   "name": "@oneblink/cra-template-oneblink-forms-app",
   "description": "Create React App template for bootstrapping a OneBlink Custom Forms App Front end",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/cra-template-oneblink-forms-app/issues"
   },
   "dependencies": {
     "@blinkmobile/geolocation": "^2.0.3",
-    "@oneblink/apps": "^0.10.0-beta.10",
-    "@oneblink/apps-react": "^0.4.10-beta.1",
+    "@oneblink/apps": "^0.11.3",
+    "@oneblink/apps-react": "0.4.12",
     "@oneblink/sdk": "0.9.5"
   },
   "engines": {
