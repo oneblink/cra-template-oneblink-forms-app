@@ -1,10 +1,8 @@
 import * as React from 'react'
-import { motion, useCycle } from 'framer-motion'
-import useViewportSizes from 'use-viewport-sizes'
+import { AnimateSharedLayout, motion, Variants } from 'framer-motion'
 
-import MenuToggle from './MenuToggle'
 import MenuItems from './MenuItems'
-import useDimensions from 'hooks/useDimensions'
+import { useMenuState } from 'components/Menu/MenuStateProvider'
 import styled from 'styled-components'
 
 // for now, top and bottom give weird results
@@ -12,66 +10,74 @@ interface Props {
   position: 'left' | 'right' | 'top' | 'bottom'
 }
 
+const MENU_WIDTH_OPEN = 200
+const MENU_WIDTH_CLOSED = 0
+const MENU_HEIGHT_OPEN = 148
+const MENU_HEIGHT_CLOSED = 0
+
 const MenuContainer = motion(styled.div<Props>`
   display: flex;
   flex: 1;
   flex-direction: ${({ position }) =>
     ['left', 'right'].indexOf(position) > -1 ? 'column' : 'row'};
-  padding: 0 0.25rem;
+  overflow: hidden;
+  height: 0px;
+  width: 0px;
 `)
 MenuContainer.displayName = 'MenuContainer'
 
-const MenuHeader = styled.div`
-  display: flex;
-  flex-direction: row;
-`
+const openClosedVariants: Variants = {
+  openWidth: (width = MENU_WIDTH_OPEN) => {
+    return {
+      width: width,
+      height: 'auto',
+      transition: {
+        ease: 'easeOut',
+        duration: 0.15,
+      },
+    }
+  },
+  closedWidth: (width = MENU_WIDTH_CLOSED) => ({
+    width: width,
 
-export default function Menu({ position }: Props) {
+    transition: {
+      ease: 'easeIn',
+      duration: 0.2,
+    },
+  }),
+  openHeight: (height = MENU_HEIGHT_OPEN) => {
+    return {
+      height: height,
+      transition: {
+        ease: 'easeOut',
+        duration: 0.15,
+      },
+    }
+  },
+  closedHeight: (height = MENU_HEIGHT_CLOSED) => ({
+    height: height,
+    transition: {
+      ease: 'easeIn',
+      duration: 0.2,
+    },
+  }),
+}
+
+export default function Menu() {
   const containerRef = React.useRef<HTMLDivElement>(null)
-  const { width, height } = useDimensions(containerRef)
-  // @ts-expect-error
-  const [vpWidth] = useViewportSizes({ throttleTimeout: 1000 })
-  const [isCollapsed, toggleExpanded] = useCycle(false, true)
+  const { position, animation, startingAnimation } = useMenuState()
 
-  React.useEffect(() => {
-    if (vpWidth <= 480 && vpWidth && !isCollapsed) {
-      toggleExpanded()
-    }
-  }, [isCollapsed, toggleExpanded, vpWidth])
-
-  const customAnimationValue =
-    ['left', 'right'].indexOf(position) > -1 ? width : height
-
-  let animation, menuToggleAlign
-  if (isCollapsed) {
-    if (['left', 'right'].indexOf(position) > -1) {
-      menuToggleAlign = position === 'left' ? 'flex-start' : 'flex-end'
-      animation = 'closedWidth'
-    } else {
-      animation = 'closedHeight'
-      menuToggleAlign = position === 'top' ? 'flex-start' : 'flex-end'
-    }
-  } else {
-    if (['left', 'right'].indexOf(position) > -1) {
-      animation = 'openWidth'
-      menuToggleAlign = position === 'left' ? 'flex-start' : 'flex-end'
-    } else {
-      animation = 'openHeight'
-      menuToggleAlign = position === 'top' ? 'flex-start' : 'flex-end'
-    }
-  }
   return (
-    <MenuContainer
-      animate={animation}
-      initial={'openWidth'}
-      custom={customAnimationValue}
-      ref={containerRef}
-      position={position}
-    >
-      <MenuHeader>
-        <MenuToggle onClick={toggleExpanded} align={menuToggleAlign} />
-      </MenuHeader>
-      <MenuItems isCollapsed={isCollapsed} position={position} />
-    </MenuContainer>
+    <AnimateSharedLayout>
+      <MenuContainer
+        animate={animation}
+        initial={startingAnimation}
+        ref={containerRef}
+        position={position}
+        variants={openClosedVariants}
+      >
+        <MenuItems />
+      </MenuContainer>
+    </AnimateSharedLayout>
   )
 }

@@ -1,13 +1,14 @@
 import styled from 'styled-components'
 import { Person, Reply } from '@styled-icons/material-outlined'
 import { useLocation, useHistory, Link } from 'react-router-dom'
+import MenuToggle from 'components/Menu/MenuToggle'
 
 const HeaderContainer = styled.div`
   max-height: 80px;
   background-color: ${({ theme }) => theme.palette.primaryColor};
   width: 100%;
   margin: 0 auto;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   display: flex;
   align-items: center;
   padding: 8px;
@@ -53,6 +54,7 @@ export default function Header() {
 
   return (
     <HeaderContainer>
+      <MenuToggle />
       <BackIcon
         $visible={
           !(location.pathname === '/' || location.pathname === '/login')
