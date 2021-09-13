@@ -1,8 +1,10 @@
-import React from 'react'
-import styled from 'styled-components'
+import React, { useEffect } from 'react'
+import styled, { useTheme } from 'styled-components'
+import useViewportSizes from 'use-viewport-sizes'
 
 import Header from 'components/Layout/Header'
 import Menu from '../Menu'
+import MenuStateProvider from 'components/Menu/MenuStateProvider'
 const FlexContainer = styled.div`
   display: flex;
   flex-grow: 1;
@@ -20,14 +22,29 @@ const ChildrenContainer = styled.div`
 `
 
 export default function Page({ children }: { children: React.ReactNode }) {
+  const theme = useTheme()
+
+  const [vpWidth] = useViewportSizes({ debounceTimeout: 250 })
+  const [position, setPosition] = React.useState<
+    'left' | 'top' | 'right' | 'bottom' | void
+  >()
+  useEffect(() => {
+    vpWidth &&
+      setPosition(vpWidth > theme.screenSizes.largeTablet ? 'left' : 'top')
+  }, [theme.screenSizes.largeTablet, vpWidth])
+
   return (
     <PageContainer>
-      <Header />
-      <FlexContainer>
-        <Menu position="left">
-          <ChildrenContainer>{children}</ChildrenContainer>
-        </Menu>
-      </FlexContainer>
+      {position ? (
+        <MenuStateProvider position={position}>
+          <Header />
+          <FlexContainer>
+            <Menu>
+              <ChildrenContainer>{children}</ChildrenContainer>
+            </Menu>
+          </FlexContainer>
+        </MenuStateProvider>
+      ) : null}
     </PageContainer>
   )
 }

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import Menu from './ExpandingMenu'
+import { useMenuState } from './MenuStateProvider'
 
 interface Props {
   position?: 'left' | 'right' | 'top' | 'bottom'
@@ -14,8 +15,6 @@ const MENU_HEIGHT = '3rem'
 
 const ContentContainer = styled.div<ContainerProps>`
   display: flex;
-  contain: ${({ menuPosition }) =>
-    menuPosition === 'top' ? 'paint' : 'initial'};
   flex: 1;
   flex-direction: ${({ menuPosition }) => {
     return {
@@ -34,7 +33,7 @@ const NavContainer = styled.div<Props>`
     ['left', 'top', 'right'].indexOf(position) > -1 ? 0 : 'initial'};
   bottom: ${({ position = 'left' }) => (position === 'bottom' ? 0 : 'initial')};
   position: ${({ position = 'left' }) =>
-    ['left', 'right'].indexOf(position) > -1 ? 'initial' : 'fixed'};
+    ['left', 'right'].indexOf(position) > -1 ? 'initial' : 'initial'};
 
   min-width: ${({ position = 'left' }) => {
     return {
@@ -46,17 +45,16 @@ const NavContainer = styled.div<Props>`
   }};
   min-height: ${({ position = 'left' }) => {
     return {
-      left: '100vh',
-      right: '100vh',
-      top: MENU_HEIGHT,
-      bottom: MENU_HEIGHT,
+      left: '100%',
+      right: '100%',
+      top: 'auto',
+      bottom: 'auto',
     }[position]
   }};
 
   background-color: ${({ theme }) => theme.palette.panelBackground};
   box-shadow: 0 1px 5px 0 rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%),
     0 3px 1px -2px rgb(0 0 0 / 12%);
-  padding: 1rem;
 `
 
 const PageContainer = styled.div<ContainerProps>`
@@ -64,20 +62,19 @@ const PageContainer = styled.div<ContainerProps>`
   flex: 1;
   flex-direction: column;
 
-  margin-top: ${({ menuPosition }) =>
-    menuPosition === 'top' ? MENU_HEIGHT : 0};
+  margin-top: 0;
   margin-bottom: ${({ menuPosition }) =>
     menuPosition === 'bottom' ? `calc(${MENU_HEIGHT} + 1rem)` : '1rem'};
 `
 
 export default function PageWithMenu({
   children,
-  position = 'left',
-}: React.PropsWithChildren<Props>) {
+}: React.PropsWithChildren<Record<string, unknown>>) {
+  const { position } = useMenuState()
   return (
     <ContentContainer menuPosition={position}>
       <NavContainer position={position}>
-        <Menu position={position} />
+        <Menu />
       </NavContainer>
       <PageContainer menuPosition={position}>{children}</PageContainer>
     </ContentContainer>
