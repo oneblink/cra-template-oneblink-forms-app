@@ -28,9 +28,9 @@ type Props = {
     submission: Record<string, unknown>,
   ) => FormTypes.Form
   updateSubmission: (
-    submission: FormSubmissionState,
+    submission: Record<string, unknown>,
     definition: FormTypes.Form,
-  ) => FormSubmissionState
+  ) => Record<string, unknown>
   buttons?: Record<string, unknown>
 }
 
@@ -104,8 +104,10 @@ function ControlledForm({
     clearSaveDraftError,
   } = useSaveDraft()
 
-  const [{ definition, submission: liveSubmission }, setFormSubmission] =
-    useFormSubmissionState(form, preFillData)
+  const [
+    { definition, submission: liveSubmission },
+    setFormSubmission,
+  ] = useFormSubmissionState(form, preFillData)
 
   const customDefinition = React.useMemo(() => {
     return updateDefinition(definition, liveSubmission)
@@ -119,7 +121,13 @@ function ControlledForm({
             ? formSubmission(currentState)
             : formSubmission
 
-        return updateSubmission(newFormSubmission, customDefinition)
+        return {
+          submission: updateSubmission(
+            newFormSubmission.submission,
+            customDefinition,
+          ),
+          definition: customDefinition,
+        }
       })
     },
     [setFormSubmission, updateSubmission, customDefinition],
@@ -218,7 +226,13 @@ function ControlledFormWithAutosave({
             ? formSubmission(currentState)
             : formSubmission
 
-        return updateSubmission(newFormSubmission, customDefinition)
+        return {
+          submission: updateSubmission(
+            newFormSubmission.submission,
+            customDefinition,
+          ),
+          definition: customDefinition,
+        }
       })
     },
     [setFormSubmission, updateSubmission, customDefinition],
