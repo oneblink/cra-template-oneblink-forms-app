@@ -8,9 +8,9 @@
   },
   "dependencies": {
     "@blinkmobile/geolocation": "^2.0.3",
-    "@oneblink/apps": "^0.11.4",
-    "@oneblink/apps-react": "^0.4.15",
-    "@oneblink/sdk-core": "^0.1.2"
+    "@oneblink/apps": "^0.12.5",
+    "@oneblink/apps-react": "^0.5.5",
+    "@oneblink/sdk-core": "^0.3.2"
   },
   "engines": {
     "node": ">=14"
