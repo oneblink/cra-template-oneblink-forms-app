@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import AuthenticatedRoute from 'components/AuthenticatedRoute'
 import OAuthCallback from 'components/Auth/OAuthCallback'
@@ -20,11 +20,36 @@ import PendingQueueListScene from 'Scenes/Pending'
 import { useIsOffline, useAuth } from '@oneblink/apps-react'
 import { submissionService } from '@oneblink/apps'
 
+import { ToastContainer, Slide, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
+import * as serviceWorker from './serviceWorkerRegistration'
+import ServiceWorkerNotification from './components/ServiceWorkerNotification'
+
 import '@oneblink/apps-react/dist/styles.css'
 
 export default function App() {
   const isOffline = useIsOffline()
   const { isLoggedIn } = useAuth()
+  const hasInstalledServiceWorker = useRef(false)
+
+  useEffect(() => {
+    if (hasInstalledServiceWorker.current) return
+    console.log('installing service worker')
+    serviceWorker.register({
+      onSuccess: () => {
+        console.log('service worker installed')
+      },
+      onUpdate: (sw) => {
+        toast.info(<ServiceWorkerNotification sw={sw} />, {
+          position: 'bottom-right',
+          hideProgressBar: true,
+          autoClose: false,
+        })
+      },
+    })
+    hasInstalledServiceWorker.current = true
+  }, [])
 
   useEffect(() => {
     if (!isOffline && isLoggedIn) {
@@ -69,6 +94,7 @@ export default function App() {
             </Switch>
           </Page>
         </AppStylesProvider>
+        <ToastContainer transition={Slide} />
       </ThemeProvider>
     </Router>
   )

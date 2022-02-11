@@ -30,6 +30,7 @@ The variables added above will need to be configured in an `.env.local` file:
 ```
 REACT_APP_OB_COGNITO_CLIENT_ID=abcde12345
 REACT_APP_OB_FORMS_APP_ID=12345
+# REACT_APP_LOCAL_SERVICEWORKER=true
 ```
 
 To start the project locally:
@@ -58,3 +59,11 @@ Used to render a list of pending submissions via the pending queue. Submissions 
 ### `./src/Scenes/Form`
 
 The Forms component, as the name suggests, allows a OneBlink form definition to be rendered. A basic Form Container is provided to allow the rendering of either a OneBlink Default Form, or a Controlled Form. The implementation provided uses Form IDs to achieve this, however this can obviously be customised to your own needs. It's recommended to familarise yourself with the differences between the Default Form and the Controlled Form. While the Default Form will be fine in the majority of cases, the Controlled Form will allow access to modify the Form Definition and Submission model programmatically on the fly. For more information, please see [https://github.com/oneblink/apps-react/blob/master/docs/OneBlinkFormControlled.md](https://github.com/oneblink/apps-react/blob/master/docs/OneBlinkFormControlled.md).
+
+## Testing service workers
+
+The service worker file must be a javascript file, therefore the project needs to be built:
+
+- uncomment `REACT_APP_LOCAL_SERVICEWORKER=true` in `.env.local`
+- build the project (`npm run build`)
+- `serve -s ./build -l 3000`
